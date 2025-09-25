@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+
+	<div id="app">
+
+		<h1>Day2</h1>
+		
+		<div>
+			<h2>조건부 렌더링</h2>
+
+			<h3>v-if 디렉티브</h3>
+			
+			<p v-if="isLoggedIn">환영합니다, {{user.name}}님!</p>
+			<p v-else>로그인해주세요</p>
+			
+			<div v-if="user.role === 'admin'">
+				<button>관리자 기능</button>
+			</div>
+			
+			<div v-else-if="user.role ==='user'">
+				<button>사용자 메뉴</button>
+			</div>
+			<div v-else>게스트</div>
+			<div v-if="showDetails">
+				<p>상세 정보가 표시됩니다.</p>
+			</div>
+		</div>
+
+		<div>
+			<h3>v-show</h3>
+			<div>
+				<p v-show="true">보이는 내용</p>
+				<p v-show="false">숨겨진 내용</p>
+				<p v-show="isVisible">보이는 내용</p>
+				<!-- <div v-show="showMenu">자주 토글되는 드롭다운 메뉴</div> -->
+			</div>
+		</div>
+
+		<hr>
+
+		<div>
+			<h2>리스트 렌더링</h2>
+			<h3>v-for 디렉티브</h3>
+			<div>
+				<ul>
+					<li v-for="todo in todos" :key="todo.id">
+						{{todo.text}} {{todo.completed ? '✅ 완료':'⏳ 진행중'}}
+					</li>
+				</ul>
+
+				<p>사용자 정보</p>
+				<ul>
+					<li v-for="(value, key) in users" :key="key">
+						{{key}}: {{value}}
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<hr>
+
+		<div>
+
+			<h2>이벤트 처리</h2>
+			<h3>v-on 디렉티브</h3>
+			<div>
+				<p>클릭 이벤트 v-on:click(@click)</p>
+				<div><button @click="handleAlert">Alert!</button></div>
+				<p>인풋 이벤트 @input</p>
+				<input @input="handleInput" type="text" placehoder="입력하세요">
+				<p>섭밋 이벤트@submit.prevent </p>
+				<form @submit.prevent="handleSubmit"><button>제출</button></form>
+				<p>마우스 오버 이벤트(@mouseover)</p>
+				<div @mouseover.once="handleMouseOver">마우스 오버(한 번만) 콘솔로 확인</div>
+
+				<h4>수식어</h4>
+				<h5>.prevent</h5>
+					<p>
+						<!-- event.preventDefault() 자동 실행 -->
+						&ltform @submit.prevent="handleSubmit"&gt;제출&lt/form&gt;
+					</p>
+				<h5>.stop</h5>
+					<p>
+						<!-- 이벤트가 한 번만 실행됨 -->
+						&ltbutton @click.once="handleClick"&gt;한 번만 클릭&lt/button&gt;
+					</p>
+				<h5>.once</h5>
+				<h5>키 수식어:</h5>
+				<p>
+					<!-- 특정 키만 감지 -->
+					&lt;input @keyup.enter="handleEnter" placeholder="Enter 키"&gt; <br>
+					&lt;input @keyup.space="handleSpace" placeholder="Space 키"&gt; <br>
+					&lt;input @keyup.esc="handleEscape" placeholder="ESC 키"&gt;
+				</p>
+				<h5>마우스 수식어:</h5>
+				<p>
+					<!-- 마우스 버튼 구분 -->
+					&lt;button @click.left="handleLeftClick"&gt;왼쪽 클릭&lt;/button&gt; <br>
+					&lt;button @click.right="handleRightClick"&gt;오른쪽 클릭&lt;/button&gt; <br>
+					&lt;button @click.middle="handleMiddleClick"&gt;가운데 클릭&lt;/button&gt;
+				</p>
+				
+			</div>
+
+			<hr>
+
+			<div>
+				<h2>실습 Todo Lists</h2>
+				<input type="text" v-model="newTodo" @keyup.enter="addTodo" placehoder="할 일을 입력하세요">
+				<p>{{newTodo}}</p>
+				<ul>
+					<li v-for="myTodo in myTodos" :key="myTodo.id">
+						{{myTodo.text}}
+						<input type="checkbox" v-model="myTodo.completed">
+						<button @click="deleteTodo(myTodo.id)">삭제</button>
+					</li>
+				</ul>
+
+				<p>전체: {{myTodos.length}}개</p>
+				<p>완료: {{myTodos.filter(t=>t.completed).length}}개</p>
+				<p>미완료: {{myTodos.filter(t=>!t.completed).length}}개</p>
+			</div>
+
+		</div>
+
+
+	</div>
+	
+	<script>
+
+		const { createApp } = Vue;
+
+		createApp({
+
+			data(){
+				return {
+					isLoggedIn: false,
+					user: {
+						name: '김철수',
+						role: 'user'
+					},
+					showDetails: true,
+					isVisible: true,
+					todos: [{
+						id:1, text: 'Vue.js 학습', completed: false},
+						{ id: 2, text: '프로젝트 만들기', completed: true },
+						{ id: 3, text: '포트폴리오 작성', completed: false }
+					],
+					users: {
+						name: '김철수',
+						age: 25,
+						city: '서울'
+					},
+					myTodos: [
+						{id:1, text: '할일1', completed: true},
+						{id:2, text: '할일2', completed: false},
+						{id:3, text: '할일3', completed: false},
+
+					],
+					newTodo: '',
+				}
+			},
+				methods: {
+					handleAlert(){
+						alert('클릭됨!')
+					},
+					handleInput(e){
+						console.log('입력값:', e.target.value)
+					},
+					handleSubmit(e){
+						// e.preventDefault();
+						console.log('폼이 제출되었습니다!')
+					},
+					handleMouseOver(){
+						console.log('마우스 오버 됨')
+					},
+					addTodo(){
+						this.myTodos.push({
+							id: Date.now(),
+							text: this.newTodo,
+							completed: false
+						})
+						this.newTodo = ''
+					},
+					deleteTodo(id){
+						this.myTodos = this.myTodos.filter(t=>t.id !==id)
+					}
+				}
+
+		}).mount('#app')
+
+	</script>
+</body>
+</html>
